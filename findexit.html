@@ -868,7 +868,7 @@
                 const yi = Math.floor(expected_y);
                 const pos = new Vec3(xi, yi, zi);
                 const chunk_pos = pos.toChunkPos();
-                if (ignore_same_chunk && chunk_pos.x === last_chunk_pos.x && chunk_pos.z === last_chunk_pos.z)
+                if (ignore_same_chunk && chunk_pos.x === last_chunk_pos.x && chunk_pos.z === last_chunk_pos.z&& i != CHUNK_LIMIT)
                     continue;
                 last_chunk_pos = chunk_pos;
                 base_points.push(pos);

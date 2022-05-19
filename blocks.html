@@ -1,0 +1,1583 @@
+<html>
+
+<head>
+    <title>End Gateway Helper</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=2.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.18/dist/katex.min.css">
+    <style>
+/**
+* prism.js Github theme based on GitHub's theme.
+* @author Sam Clarke
+*/
+        code[class*="language-"],
+        pre[class*="language-"] {
+            color: #333;
+            background: none;
+            font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+            text-align: left;
+            white-space: pre;
+            word-spacing: normal;
+            word-break: normal;
+            word-wrap: normal;
+            line-height: 1.4;
+            -moz-tab-size: 8;
+            -o-tab-size: 8;
+            tab-size: 8;
+            -webkit-hyphens: none;
+            -moz-hyphens: none;
+            -ms-hyphens: none;
+            hyphens: none;
+        }
+
+        /* Code blocks */
+        pre[class*="language-"] {
+            padding: .8em;
+            overflow: auto;
+            /* border: 1px solid #ddd; */
+            border-radius: 3px;
+            /* background: #fff; */
+            background: #f5f5f5;
+        }
+
+        /* Inline code */
+        :not(pre)>code[class*="language-"] {
+            padding: .1em;
+            border-radius: .3em;
+            white-space: normal;
+            background: #f5f5f5;
+        }
+
+        .token.comment,
+        .token.blockquote {
+            color: #969896;
+        }
+
+        .token.cdata {
+            color: #183691;
+        }
+
+        .token.doctype,
+        .token.punctuation,
+        .token.variable,
+        .token.macro.property {
+            color: #333;
+        }
+
+        .token.operator,
+        .token.important,
+        .token.keyword,
+        .token.rule,
+        .token.builtin {
+            color: #a71d5d;
+        }
+
+        .token.string,
+        .token.url,
+        .token.regex,
+        .token.attr-value {
+            color: #183691;
+        }
+
+        .token.property,
+        .token.number,
+        .token.boolean,
+        .token.entity,
+        .token.atrule,
+        .token.constant,
+        .token.symbol,
+        .token.command,
+        .token.code {
+            color: #0086b3;
+        }
+
+        .token.tag,
+        .token.selector,
+        .token.prolog {
+            color: #63a35c;
+        }
+
+        .token.function,
+        .token.namespace,
+        .token.pseudo-element,
+        .token.class,
+        .token.class-name,
+        .token.pseudo-class,
+        .token.id,
+        .token.url-reference .token.variable,
+        .token.attr-name {
+            color: #795da3;
+        }
+
+        .token.entity {
+            cursor: help;
+        }
+
+        .token.title,
+        .token.title .token.punctuation {
+            font-weight: bold;
+            color: #1d3e81;
+        }
+
+        .token.list {
+            color: #ed6a43;
+        }
+
+        .token.inserted {
+            background-color: #eaffea;
+            color: #55a532;
+        }
+
+        .token.deleted {
+            background-color: #ffecec;
+            color: #bd2c00;
+        }
+
+        .token.bold {
+            font-weight: bold;
+        }
+
+        .token.italic {
+            font-style: italic;
+        }
+
+        /* JSON */
+        .language-json .token.property {
+            color: #183691;
+        }
+
+        .language-markup .token.tag .token.punctuation {
+            color: #333;
+        }
+
+        /* CSS */
+        code.language-css,
+        .language-css .token.function {
+            color: #0086b3;
+        }
+
+        /* YAML */
+        .language-yaml .token.atrule {
+            color: #63a35c;
+        }
+
+        code.language-yaml {
+            color: #183691;
+        }
+
+        /* Ruby */
+        .language-ruby .token.function {
+            color: #333;
+        }
+
+        /* Markdown */
+        .language-markdown .token.url {
+            color: #795da3;
+        }
+
+        /* Makefile */
+        .language-makefile .token.symbol {
+            color: #795da3;
+        }
+
+        .language-makefile .token.variable {
+            color: #183691;
+        }
+
+        .language-makefile .token.builtin {
+            color: #0086b3;
+        }
+
+        /* Bash */
+        .language-bash .token.keyword {
+            color: #0086b3;
+        }
+
+        /* highlight */
+        pre[data-line] {
+            position: relative;
+            padding: 1em 0 1em 3em;
+        }
+
+        pre[data-line] .line-highlight-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: transparent;
+            display: block;
+            width: 100%;
+        }
+
+        pre[data-line] .line-highlight {
+            position: absolute;
+            left: 0;
+            right: 0;
+            padding: inherit 0;
+            margin-top: 1em;
+            background: hsla(24, 20%, 50%, .08);
+            background: linear-gradient(to right, hsla(24, 20%, 50%, .1) 70%, hsla(24, 20%, 50%, 0));
+            pointer-events: none;
+            line-height: inherit;
+            white-space: pre;
+        }
+
+        pre[data-line] .line-highlight:before,
+        pre[data-line] .line-highlight[data-end]:after {
+            content: attr(data-start);
+            position: absolute;
+            top: .4em;
+            left: .6em;
+            min-width: 1em;
+            padding: 0 .5em;
+            background-color: hsla(24, 20%, 50%, .4);
+            color: hsl(24, 20%, 95%);
+            font: bold 65%/1.5 sans-serif;
+            text-align: center;
+            vertical-align: .3em;
+            border-radius: 999px;
+            text-shadow: none;
+            box-shadow: 0 1px white;
+        }
+
+        pre[data-line] .line-highlight[data-end]:after {
+            content: attr(data-end);
+            top: auto;
+            bottom: .4em;
+        }
+
+        html body {
+            font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fff;
+            overflow: initial;
+            box-sizing: border-box;
+            word-wrap: break-word
+        }
+
+        html body>:first-child {
+            margin-top: 0
+        }
+
+        html body h1,
+        html body h2,
+        html body h3,
+        html body h4,
+        html body h5,
+        html body h6 {
+            line-height: 1.2;
+            margin-top: 1em;
+            margin-bottom: 16px;
+            color: #000
+        }
+
+        html body h1 {
+            font-size: 2.25em;
+            font-weight: 300;
+            padding-bottom: .3em
+        }
+
+        html body h2 {
+            font-size: 1.75em;
+            font-weight: 400;
+            padding-bottom: .3em
+        }
+
+        html body h3 {
+            font-size: 1.5em;
+            font-weight: 500
+        }
+
+        html body h4 {
+            font-size: 1.25em;
+            font-weight: 600
+        }
+
+        html body h5 {
+            font-size: 1.1em;
+            font-weight: 600
+        }
+
+        html body h6 {
+            font-size: 1em;
+            font-weight: 600
+        }
+
+        html body h1,
+        html body h2,
+        html body h3,
+        html body h4,
+        html body h5 {
+            font-weight: 600
+        }
+
+        html body h5 {
+            font-size: 1em
+        }
+
+        html body h6 {
+            color: #5c5c5c
+        }
+
+        html body strong {
+            color: #000
+        }
+
+        html body del {
+            color: #5c5c5c
+        }
+
+        html body a:not([href]) {
+            color: inherit;
+            text-decoration: none
+        }
+
+        html body a {
+            color: #08c;
+            text-decoration: none
+        }
+
+        html body a:hover {
+            color: #00a3f5;
+            text-decoration: none
+        }
+
+        html body img {
+            max-width: 100%
+        }
+
+        html body>p {
+            margin-top: 0;
+            margin-bottom: 16px;
+            word-wrap: break-word
+        }
+
+        html body>ul,
+        html body>ol {
+            margin-bottom: 16px
+        }
+
+        html body ul,
+        html body ol {
+            padding-left: 2em
+        }
+
+        html body ul.no-list,
+        html body ol.no-list {
+            padding: 0;
+            list-style-type: none
+        }
+
+        html body ul ul,
+        html body ul ol,
+        html body ol ol,
+        html body ol ul {
+            margin-top: 0;
+            margin-bottom: 0
+        }
+
+        html body li {
+            margin-bottom: 0
+        }
+
+        html body li.task-list-item {
+            list-style: none
+        }
+
+        html body li>p {
+            margin-top: 0;
+            margin-bottom: 0
+        }
+
+        html body .task-list-item-checkbox {
+            margin: 0 .2em .25em -1.8em;
+            vertical-align: middle
+        }
+
+        html body .task-list-item-checkbox:hover {
+            cursor: pointer
+        }
+
+        html body blockquote {
+            margin: 16px 0;
+            font-size: inherit;
+            padding: 0 15px;
+            color: #5c5c5c;
+            background-color: #f0f0f0;
+            border-left: 4px solid #d6d6d6
+        }
+
+        html body blockquote>:first-child {
+            margin-top: 0
+        }
+
+        html body blockquote>:last-child {
+            margin-bottom: 0
+        }
+
+        html body hr {
+            height: 4px;
+            margin: 32px 0;
+            background-color: #d6d6d6;
+            border: 0 none
+        }
+
+        html body table {
+            margin: 10px 0 15px 0;
+            border-collapse: collapse;
+            border-spacing: 0;
+            display: block;
+            width: 100%;
+            overflow: auto;
+            word-break: normal;
+            word-break: keep-all
+        }
+
+        html body table th {
+            font-weight: bold;
+            color: #000
+        }
+
+        html body table td,
+        html body table th {
+            border: 1px solid #d6d6d6;
+            padding: 6px 13px
+        }
+
+        html body dl {
+            padding: 0
+        }
+
+        html body dl dt {
+            padding: 0;
+            margin-top: 16px;
+            font-size: 1em;
+            font-style: italic;
+            font-weight: bold
+        }
+
+        html body dl dd {
+            padding: 0 16px;
+            margin-bottom: 16px
+        }
+
+        html body code {
+            font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
+            font-size: .85em !important;
+            color: #000;
+            background-color: #f0f0f0;
+            border-radius: 3px;
+            padding: .2em 0
+        }
+
+        html body code::before,
+        html body code::after {
+            letter-spacing: -0.2em;
+            content: "\00a0"
+        }
+
+        html body pre>code {
+            padding: 0;
+            margin: 0;
+            font-size: .85em !important;
+            word-break: normal;
+            white-space: pre;
+            background: transparent;
+            border: 0
+        }
+
+        html body .highlight {
+            margin-bottom: 16px
+        }
+
+        html body .highlight pre,
+        html body pre {
+            padding: 1em;
+            overflow: auto;
+            font-size: .85em !important;
+            line-height: 1.45;
+            border: #d6d6d6;
+            border-radius: 3px
+        }
+
+        html body .highlight pre {
+            margin-bottom: 0;
+            word-break: normal
+        }
+
+        html body pre code,
+        html body pre tt {
+            display: inline;
+            max-width: initial;
+            padding: 0;
+            margin: 0;
+            overflow: initial;
+            line-height: inherit;
+            word-wrap: normal;
+            background-color: transparent;
+            border: 0
+        }
+
+        html body pre code:before,
+        html body pre tt:before,
+        html body pre code:after,
+        html body pre tt:after {
+            content: normal
+        }
+
+        html body p,
+        html body blockquote,
+        html body ul,
+        html body ol,
+        html body dl,
+        html body pre {
+            margin-top: 0;
+            margin-bottom: 16px
+        }
+
+        html body kbd {
+            color: #000;
+            border: 1px solid #d6d6d6;
+            border-bottom: 2px solid #c7c7c7;
+            padding: 2px 4px;
+            background-color: #f0f0f0;
+            border-radius: 3px
+        }
+
+        @media print {
+            html body {
+                background-color: #fff
+            }
+
+            html body h1,
+            html body h2,
+            html body h3,
+            html body h4,
+            html body h5,
+            html body h6 {
+                color: #000;
+                page-break-after: avoid
+            }
+
+            html body blockquote {
+                color: #5c5c5c
+            }
+
+            html body pre {
+                page-break-inside: avoid
+            }
+
+            html body table {
+                display: table
+            }
+
+            html body img {
+                display: block;
+                max-width: 100%;
+                max-height: 100%
+            }
+
+            html body pre,
+            html body code {
+                word-wrap: break-word;
+                white-space: pre
+            }
+        }
+
+        .markdown-preview {
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box
+        }
+
+        .markdown-preview .pagebreak,
+        .markdown-preview .newpage {
+            page-break-before: always
+        }
+
+        .markdown-preview pre.line-numbers {
+            position: relative;
+            padding-left: 3.8em;
+            counter-reset: linenumber
+        }
+
+        .markdown-preview pre.line-numbers>code {
+            position: relative
+        }
+
+        .markdown-preview pre.line-numbers .line-numbers-rows {
+            position: absolute;
+            pointer-events: none;
+            top: 1em;
+            font-size: 100%;
+            left: 0;
+            width: 3em;
+            letter-spacing: -1px;
+            border-right: 1px solid #999;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none
+        }
+
+        .markdown-preview pre.line-numbers .line-numbers-rows>span {
+            pointer-events: none;
+            display: block;
+            counter-increment: linenumber
+        }
+
+        .markdown-preview pre.line-numbers .line-numbers-rows>span:before {
+            content: counter(linenumber);
+            color: #999;
+            display: block;
+            padding-right: .8em;
+            text-align: right
+        }
+
+        .markdown-preview .mathjax-exps .MathJax_Display {
+            text-align: center !important
+        }
+
+        .markdown-preview:not([for="preview"]) .code-chunk .btn-group {
+            display: none
+        }
+
+        .markdown-preview:not([for="preview"]) .code-chunk .status {
+            display: none
+        }
+
+        .markdown-preview:not([for="preview"]) .code-chunk .output-div {
+            margin-bottom: 16px
+        }
+
+        .scrollbar-style::-webkit-scrollbar {
+            width: 8px
+        }
+
+        .scrollbar-style::-webkit-scrollbar-track {
+            border-radius: 10px;
+            background-color: transparent
+        }
+
+        .scrollbar-style::-webkit-scrollbar-thumb {
+            border-radius: 5px;
+            background-color: rgba(150, 150, 150, 0.66);
+            border: 4px solid rgba(150, 150, 150, 0.66);
+            background-clip: content-box
+        }
+
+        html body[for="html-export"]:not([data-presentation-mode]) {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            margin: 0;
+            padding: 0;
+            overflow: auto
+        }
+
+        html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview {
+            position: relative;
+            top: 0
+        }
+
+        @media screen and (min-width:914px) {
+            html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview {
+                padding: 2em 2em
+            }
+        }
+
+        @media screen and (max-width:914px) {
+            html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview {
+                padding: 2em
+            }
+        }
+
+        @media screen and (max-width:450px) {
+            html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview {
+                font-size: 14px !important;
+                padding: 1em
+            }
+        }
+
+        @media print {
+            html body[for="html-export"]:not([data-presentation-mode]) #sidebar-toc-btn {
+                display: none
+            }
+        }
+
+        html body[for="html-export"]:not([data-presentation-mode]) #sidebar-toc-btn {
+            position: fixed;
+            bottom: 8px;
+            left: 8px;
+            font-size: 28px;
+            cursor: pointer;
+            color: inherit;
+            z-index: 99;
+            width: 32px;
+            text-align: center;
+            opacity: .4
+        }
+
+        html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] #sidebar-toc-btn {
+            opacity: 1
+        }
+
+        html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 300px;
+            height: 100%;
+            padding: 32px 0 48px 0;
+            font-size: 14px;
+            box-shadow: 0 0 4px rgba(150, 150, 150, 0.33);
+            box-sizing: border-box;
+            overflow: auto;
+            background-color: inherit
+        }
+
+        html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar {
+            width: 8px
+        }
+
+        html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-track {
+            border-radius: 10px;
+            background-color: transparent
+        }
+
+        html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-thumb {
+            border-radius: 5px;
+            background-color: rgba(150, 150, 150, 0.66);
+            border: 4px solid rgba(150, 150, 150, 0.66);
+            background-clip: content-box
+        }
+
+        html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc a {
+            text-decoration: none
+        }
+
+        html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc ul {
+            padding: 0 1.6em;
+            margin-top: .8em
+        }
+
+        html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc li {
+            margin-bottom: .8em
+        }
+
+        html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc ul {
+            list-style-type: none
+        }
+
+        html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview {
+            left: 300px;
+            width: calc(100% - 300px);
+            padding: 2em calc(50% - 457px - 150px);
+            margin: 0;
+            box-sizing: border-box
+        }
+
+        @media screen and (max-width:1274px) {
+            html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview {
+                padding: 2em
+            }
+        }
+
+        @media screen and (max-width:450px) {
+            html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview {
+                width: 100%
+            }
+        }
+
+        html body[for="html-export"]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .markdown-preview {
+            left: 50%;
+            transform: translateX(-50%)
+        }
+
+        html body[for="html-export"]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .md-sidebar-toc {
+            display: none
+        }
+
+        /* Please visit the URL below for more information: */
+        /*   https://shd101wyy.github.io/markdown-preview-enhanced/#/customize-css */
+    </style>
+    <script type="text/javascript" src="EndGatewayHelper.js"></script>
+    <script>
+        const csv = 
+`Name,Trans,Type,SolidBlckingBlock,SolidBlckingMaterial,Filler,Flammable,NeverBuildable,AlwaysDestroyable,Replaceable,Liquid,Translucency,BlocksMotion,BlocksPrecipitation,Solid,SuperHot
+blue_candle,蓝色蜡烛,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+birch_standing_sign,桦木告示牌,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+polished_basalt,磨制玄武岩,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+nether_gold_ore,下界金矿石,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+warped_door,诡异门,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+piston_arm_collision,NoTrans,35,false,true,true,false,false,true,false,false,0,true,true,true,false
+coral_fan_dead,死亡管珊瑚扇,45,false,true,true,false,false,true,false,false,0,true,true,true,false
+fence_gate,橡木栅栏门,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+powder_snow,粉状雪,23,false,true,true,false,false,true,false,false,0,true,true,false,false
+dark_oak_button,深色橡木按钮,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+deepslate_copper_ore,深层铜矿石,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+nether_brick_stairs,下界砖阶梯,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+blackstone_double_slab,双层黑石台阶,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+jungle_button,丛林木按钮,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+spruce_stairs,云杉木阶梯,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+gray_candle_cake,带灰色蜡烛的蛋糕,29,false,true,true,false,false,true,false,false,0.8,true,true,true,false
+crimson_wall_sign,绯红告示牌,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+end_gateway,末地折跃门,28,false,false,false,false,false,true,false,false,0,false,false,false,false
+beacon,信标,17,false,false,false,false,true,true,false,false,1,true,true,true,false
+red_nether_brick,红色下界砖,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+cobbled_deepslate_stairs,深板岩圆石阶梯,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+snow_layer,顶层雪,21,false,false,false,false,true,false,true,false,0.89,false,false,false,false
+black_candle,黑色蜡烛,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+glow_frame,发光物品展示框,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+mud_brick_double_slab,双层泥砖台阶,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+hanging_roots,垂根,10,false,false,false,true,false,true,true,false,1,false,false,false,false
+prismarine_bricks_stairs,海晶石砖阶梯,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+waxed_oxidized_cut_copper,涂蜡氧化切制铜,4,true,true,false,false,false,false,false,false,0,true,true,true,false
+calcite,方解石,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+stripped_dark_oak_log,去皮深色橡树原木,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+sculk_shrieker,NoTrans,48,false,true,true,false,false,true,false,false,0,true,true,true,false
+lime_glazed_terracotta,黄绿色带釉陶瓦,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+trapdoor,橡木活板门,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+info_update,NoTrans,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+seagrass,海草,10,false,false,false,true,false,true,true,false,1,false,false,false,false
+waxed_exposed_cut_copper_slab,涂蜡外露切制铜台阶,4,false,true,true,false,false,false,false,false,0,true,true,true,false
+stone_slab,平滑石台阶,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+redstone_lamp,红石灯,33,true,true,false,false,false,true,false,false,1,true,true,true,false
+mossy_cobblestone,苔圆石,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+deepslate,深板岩,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+warped_pressure_plate,诡异木压力板,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+diamond_block,钻石块,4,true,true,false,false,false,false,false,false,0,true,true,true,false
+oak_stairs,橡木阶梯,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+end_bricks,末地石砖,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+packed_ice,浮冰,20,true,true,false,false,false,true,false,false,0,true,true,true,false
+packed_mud,NoTrans,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+light_blue_candle_cake,带淡蓝色蜡烛的蛋糕,29,false,true,true,false,false,true,false,false,0.8,true,true,true,false
+moss_carpet,苔藓地毯,8,false,false,false,false,false,true,false,false,1,false,false,false,false
+warped_fungus,诡异真菌,8,false,false,false,false,false,true,false,false,1,false,false,false,false
+polished_deepslate_slab,磨制深板岩台阶,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+amethyst_block,紫水晶方块,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+gold_block,金块,4,true,true,false,false,false,false,false,false,0,true,true,true,false
+flower_pot,花盆,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+polished_deepslate_stairs,磨制深板岩阶梯,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+yellow_flower,蒲公英,8,false,false,false,false,false,true,false,false,1,false,false,false,false
+small_amethyst_bud,小型紫水晶芽,24,false,true,true,false,false,true,false,false,0,true,true,true,false
+activator_rail,激活铁轨,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+iron_trapdoor,铁活板门,4,false,true,true,false,false,false,false,false,0,true,true,true,false
+potatoes,马铃薯,8,false,false,false,false,false,true,false,false,1,false,false,false,false
+noteblock,音符盒,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+tuff,凝灰岩,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+oxidized_cut_copper_stairs,氧化切制铜阶梯,4,false,true,true,false,false,false,false,false,0,true,true,true,false
+deepslate_tile_double_slab,双层深板岩瓦台阶,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+raw_gold_block,粗金块,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+orange_candle,橙色蜡烛,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+powered_comparator,比较器,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+warped_wall_sign,诡异木告示牌,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+melon_block,西瓜,27,true,true,false,false,false,true,false,false,0,true,true,true,false
+waxed_cut_copper_stairs,涂蜡切制铜阶梯,4,false,true,true,false,false,false,false,false,0,true,true,true,false
+mob_spawner,刷怪箱,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+soul_fire,灵魂火,14,false,false,false,false,false,true,true,false,1,false,false,false,true
+magenta_candle,品红色蜡烛,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+obsidian,黑曜石,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+deepslate_brick_wall,深板岩砖墙,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+oxidized_double_cut_copper_slab,双层氧化的切制铜台阶,4,true,true,false,false,false,false,false,false,0,true,true,true,false
+exposed_copper,外露铜,4,true,true,false,false,false,false,false,false,0,true,true,true,false
+polished_deepslate_double_slab,双层磨制深板岩台阶,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+stone_button,石头按钮,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+lava_cauldron,NoTrans,4,false,true,true,false,false,false,false,false,0,true,true,true,false
+sponge,海绵,11,true,true,false,false,false,true,false,false,0,true,true,true,false
+exposed_double_cut_copper_slab,双层外露切制铜台阶,4,true,true,false,false,false,false,false,false,0,true,true,true,false
+normal_stone_stairs,石质阶梯,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+hardened_clay,陶瓦,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+stripped_jungle_log,去皮丛林原木,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+polished_blackstone_double_slab,双层磨制黑石台阶,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+smoker,火炉,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+stone,石头,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+concrete,白色混凝土,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+hard_glass_pane,Hardened Glass Pane,17,false,false,false,false,true,true,false,false,1,true,true,true,false
+polished_blackstone_brick_double_slab,双层磨制黑石砖台阶,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+crimson_double_slab,双层绯红木台阶,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+respawn_anchor,重生锚,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+green_candle,绿色蜡烛,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+waxed_exposed_copper,涂蜡外露铜,4,true,true,false,false,false,false,false,false,0,true,true,true,false
+hay_block,干草捆,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+waxed_weathered_copper,涂蜡风化铜,4,true,true,false,false,false,false,false,false,0,true,true,true,false
+waxed_oxidized_cut_copper_slab,涂蜡氧化切制铜台阶,4,false,true,true,false,false,false,false,false,0,true,true,true,false
+cyan_candle_cake,带青色蜡烛的蛋糕,29,false,true,true,false,false,true,false,false,0.8,true,true,true,false
+sapling,橡树苗,8,false,false,false,false,false,true,false,false,1,false,false,false,false
+torch,火把,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+mud_brick_wall,NoTrans,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+honey_block,蜂蜜方块,34,true,true,false,false,false,true,false,false,0.1,true,true,true,false
+dripstone_block,滴水石方块,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+vine,藤蔓,10,false,false,false,true,false,true,true,false,1,false,false,false,false
+blackstone_slab,黑石台阶,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+gold_ore,金矿石,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+yellow_glazed_terracotta,黄色带釉陶瓦,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+stonecutter,切石机,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+warped_planks,诡异木板,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+piston,活塞,35,true,true,false,false,false,true,false,false,0,true,true,true,false
+tallgrass,蕨,10,false,false,false,true,false,true,true,false,1,false,false,false,false
+stone_brick_stairs,石砖阶梯,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+gray_candle,灰色蜡烛,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+invisible_bedrock,隐形基岩,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+carpet,地毯,32,false,false,false,true,false,true,false,false,0.8,false,false,false,false
+magenta_glazed_terracotta,品红色带釉陶瓦,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+polished_blackstone_brick_wall,磨制黑石砖墙,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+stained_glass,白色玻璃,17,false,false,false,false,true,true,false,false,1,true,true,true,false
+orange_glazed_terracotta,橙色带釉陶瓦,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+smooth_basalt,平滑玄武岩,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+waterlily,睡莲,9,false,true,true,false,false,true,false,false,1,true,false,true,false
+emerald_block,绿宝石块,4,true,true,false,false,false,false,false,false,0,true,true,true,false
+heavy_weighted_pressure_plate,测重压力板（重型）,4,false,true,true,false,false,false,false,false,0,true,true,true,false
+lightning_rod,雷霆之杖,4,false,true,true,false,false,false,false,false,0,true,true,true,false
+cobblestone_wall,圆石墙,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+underwater_torch,Underwater Torch,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+deepslate_brick_double_slab,双层深板岩砖台阶,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+wool,白色羊毛,12,true,true,false,true,false,true,false,false,0.8,true,true,true,false
+wood,橡木,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+ochre_froglight,NoTrans,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+observer,侦测器,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+redstone_torch,红石火把,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+silver_glazed_terracotta,淡灰色带釉陶瓦,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+granite_stairs,花岗岩阶梯,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+glowingobsidian,NoTrans,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+brown_mushroom,棕色蘑菇,8,false,false,false,false,false,true,false,false,1,false,false,false,false
+brown_glazed_terracotta,棕色带釉陶瓦,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+oxidized_copper,氧化铜,4,true,true,false,false,false,false,false,false,0,true,true,true,false
+copper_ore,铜矿石,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+birch_pressure_plate,桦木压力板,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+scaffolding,脚手架,44,false,false,false,true,false,true,false,false,1,false,false,false,false
+sandstone_stairs,沙石阶梯,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+green_candle_cake,带绿色蜡烛的蛋糕,29,false,true,true,false,false,true,false,false,0.8,true,true,true,false
+red_mushroom_block,红蘑菇方块,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+sculk_catalyst,NoTrans,48,true,true,false,false,false,true,false,false,0,true,true,true,false
+cobblestone,圆石,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+red_flower,玫瑰,8,false,false,false,false,false,true,false,false,1,false,false,false,false
+smooth_sandstone_stairs,平滑沙石阶梯,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+jungle_pressure_plate,丛林木压力板,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+double_cut_copper_slab,双切制铜台阶,4,true,true,false,false,false,false,false,false,0,true,true,true,false
+sandstone,沙石,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+brown_candle_cake,带棕色蜡烛的蛋糕,29,false,true,true,false,false,true,false,false,0.8,true,true,true,false
+acacia_wall_sign,NoTrans,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+light_weighted_pressure_plate,测重压力板（轻型）,4,false,true,true,false,false,false,false,false,0,true,true,true,false
+undyed_shulker_box,NoTrans,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+polished_blackstone,磨制黑石,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+mycelium,菌丝,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+bamboo,竹子,9,false,true,true,false,false,true,false,false,1,true,false,true,false
+quartz_block,石英块,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+stone_stairs,圆石阶梯,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+deepslate_brick_slab,深板岩砖台阶,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+warped_stairs,诡异阶梯,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+smithing_table,锻造台,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+wooden_door,橡木门,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+spruce_pressure_plate,云杉压力板,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+netherite_block,下界合金块,4,true,true,false,false,false,false,false,false,0,true,true,true,false
+redstone_block,红石块,4,true,true,false,false,false,false,false,false,0,true,true,true,false
+birch_fence_gate,桦木栅栏门,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+redstone_wire,红石粉,31,false,false,false,false,false,true,false,false,0.8,false,false,false,false
+waxed_exposed_cut_copper,涂蜡外露切制铜,4,true,true,false,false,false,false,false,false,0,true,true,true,false
+lava,岩浆,6,false,false,false,false,false,true,true,true,1,false,true,false,true
+loom,织布机,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+log2,金合欢原木,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+end_stone,末地石,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+crimson_door,绯红门,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+glowstone,荧石,17,false,false,false,false,true,true,false,false,1,true,true,true,false
+stone_pressure_plate,石质压力板,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+waxed_exposed_cut_copper_stairs,涂蜡外露切制铜阶梯,4,false,true,true,false,false,false,false,false,0,true,true,true,false
+mud_brick_slab,NoTrans,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+farmland,农地,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+rail,铁轨,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+blackstone_wall,黑石墙,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+mossy_cobblestone_stairs,苔圆石阶梯,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+coral_fan_hang2,,45,false,true,true,false,false,true,false,false,0,true,true,true,false
+coral_fan_hang3,,45,false,true,true,false,false,true,false,false,0,true,true,true,false
+detector_rail,探测铁轨,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+monster_egg,被虫蚀的石头,26,true,true,false,false,false,true,false,false,0,true,true,true,false
+polished_granite_stairs,磨制花岗岩阶梯,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+pink_candle_cake,带粉红色蜡烛的蛋糕,29,false,true,true,false,false,true,false,false,0.8,true,true,true,false
+cracked_deepslate_tiles,裂纹深板岩瓦,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+red_glazed_terracotta,红色带釉陶瓦,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+dark_oak_fence_gate,深色橡木栅栏门,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+crimson_nylium,绯红菌岩,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+structure_void,结构空位,51,false,false,false,false,false,true,false,false,1,false,false,true,false
+polished_blackstone_brick_slab,磨制黑石砖台阶,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+snow,雪,22,true,true,false,false,false,false,false,false,0,true,true,true,false
+sand,沙子,15,true,true,false,false,false,true,false,false,0,true,true,true,false
+daylight_detector,阳光传感器,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+conduit,潮涌核心,39,false,false,false,false,false,true,false,false,1,false,false,true,false
+slime,粘液块,34,true,true,false,false,false,true,false,false,0.1,true,true,true,false
+bone_block,骨头方块,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+frame,物品展示框,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+lapis_block,青金石块,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+coal_ore,煤矿石,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+client_request_placeholder_block,NoTrans,50,false,false,false,false,true,false,false,false,0,false,false,true,false
+redstone_ore,红石矿石,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+nether_brick_fence,下界砖栅栏,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+deepslate_tile_slab,深板岩瓦台阶,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+nether_wart_block,下界疣方块,38,true,true,false,false,false,true,false,false,0,true,true,true,false
+crimson_hyphae,绯红菌丝,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+polished_blackstone_stairs,磨制黑石阶梯,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+weathered_cut_copper_stairs,风化切制铜阶梯,4,false,true,true,false,false,false,false,false,0,true,true,true,false
+small_dripleaf_block,小型垂滴叶,8,false,false,false,false,false,true,false,false,1,false,false,false,false
+spruce_button,云杉按钮,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+crimson_trapdoor,绯红活板门,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+basalt,玄武岩,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+lit_redstone_lamp,发光红石灯,33,true,true,false,false,false,true,false,false,1,true,true,true,false
+leaves2,金合欢树叶,7,false,false,false,true,true,true,false,false,0.5,true,true,true,false
+diamond_ore,钻石矿石,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+warped_roots,诡异菌根,10,false,false,false,true,false,true,true,false,1,false,false,false,false
+sticky_piston,粘性活塞,35,true,true,false,false,false,true,false,false,0,true,true,true,false
+ender_chest,末影箱,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+medium_amethyst_bud,中型紫水晶芽,24,false,true,true,false,false,true,false,false,0,true,true,true,false
+warped_double_slab,双层诡异木台阶,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+jungle_wall_sign,NoTrans,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+sculk_sensor,NoTrans,48,false,true,true,false,false,true,false,false,0,true,true,true,false
+diorite_stairs,闪长岩阶梯,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+frog_spawn,NoTrans,42,false,false,false,false,false,true,false,false,0,false,false,false,false
+acacia_door,金合欢木门,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+crimson_button,绯红按钮,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+iron_door,铁门,4,false,true,true,false,false,false,false,false,0,true,true,true,false
+honeycomb_block,蜜脾块,26,true,true,false,false,false,true,false,false,0,true,true,true,false
+polished_blackstone_brick_stairs,磨制黑石砖阶梯,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+quartz_ore,下界石英矿石,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+daylight_detector_inverted,反转阳光传感器,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+barrel,木桶,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+chorus_flower,紫颂花,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+coral_fan_hang,,45,false,true,true,false,false,true,false,false,0,true,true,true,false
+cracked_nether_bricks,裂纹下界砖,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+powered_repeater,中继器,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+light_blue_candle,淡蓝色蜡烛,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+pumpkin,南瓜,27,true,true,false,false,false,true,false,false,0,true,true,true,false
+deepslate_tiles,深板岩瓦,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+smooth_stone,平滑石,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+black_candle_cake,带黑色蜡烛的蛋糕,29,false,true,true,false,false,true,false,false,0.8,true,true,true,false
+red_mushroom,红蘑菇,8,false,false,false,false,false,true,false,false,1,false,false,false,false
+gilded_blackstone,镀金黑石,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+exposed_cut_copper_stairs,外露切制铜阶梯,4,false,true,true,false,false,false,false,false,0,true,true,true,false
+reserved6,NoTrans,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+cut_copper_stairs,切制铜阶梯,4,false,true,true,false,false,false,false,false,0,true,true,true,false
+unknown,未知,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+coral_fan,管珊瑚扇,45,false,true,true,false,false,true,false,false,0,true,true,true,false
+mangrove_propagule_hanging,NoTrans,8,false,false,false,false,false,true,false,false,1,false,false,false,false
+yellow_candle_cake,带黄色蜡烛的蛋糕,29,false,true,true,false,false,true,false,false,0.8,true,true,true,false
+infested_deepslate,被虫蚀的深板岩,26,true,true,false,false,false,true,false,false,0,true,true,true,false
+soul_torch,灵魂火把,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+podzol,灰化土,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+copper_block,铜方块,4,true,true,false,false,false,false,false,false,0,true,true,true,false
+lit_redstone_ore,发光中的红石矿石,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+deepslate_tile_stairs,深板岩瓦阶梯,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+crimson_fence_gate,绯红栅栏门,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+deadbush,枯萎的灌木,10,false,false,false,true,false,true,true,false,1,false,false,false,false
+waxed_weathered_double_cut_copper_slab,双层风化涂蜡切制铜台阶,4,true,true,false,false,false,false,false,false,0,true,true,true,false
+polished_blackstone_bricks,磨制黑石砖,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+red_candle,红色蜡烛,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+cut_copper,切制铜,4,true,true,false,false,false,false,false,false,0,true,true,true,false
+iron_ore,铁矿石,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+spruce_door,云杉木门,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+frosted_ice,冰霜,19,false,false,false,false,true,true,false,false,0,true,true,true,false
+large_amethyst_bud,大型紫水晶芽,24,false,true,true,false,false,true,false,false,0,true,true,true,false
+warped_trapdoor,诡异木活板门,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+flowing_water,水,5,false,false,false,false,false,true,true,true,1,false,true,false,false
+brick_block,砖块,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+hard_glass,Hardened Glass,17,false,false,false,false,true,true,false,false,1,true,true,true,false
+quartz_stairs,石英阶梯,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+cave_vines,洞穴藤蔓,8,false,false,false,false,false,true,false,false,1,false,false,false,false
+iron_bars,铁栏杆,4,false,true,true,false,false,false,false,false,0,true,true,true,false
+melon_stem,NoTrans,8,false,false,false,false,false,true,false,false,1,false,false,false,false
+crimson_planks,绯红木板,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+waxed_weathered_cut_copper,涂蜡风化切制铜,4,true,true,false,false,false,false,false,false,0,true,true,true,false
+stained_glass_pane,白色玻璃板,17,false,false,false,false,true,true,false,false,1,true,true,true,false
+wall_sign,墙上的告示牌,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+jukebox,唱片机,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+jigsaw,拼图方块,4,false,true,true,false,false,false,false,false,0,true,true,true,false
+border_block,边界方块,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+shroomlight,菌光体,38,true,true,false,false,false,true,false,false,0,true,true,true,false
+chiseled_polished_blackstone,錾制磨制黑石,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+dark_oak_stairs,深色橡木阶梯,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+deepslate_tile_wall,深板岩瓦墙,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+glass_pane,玻璃板,17,false,false,false,false,true,true,false,false,1,true,true,true,false
+chiseled_deepslate,錾制深板岩,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+cut_copper_slab,切制铜台阶,4,false,true,true,false,false,false,false,false,0,true,true,true,false
+coral_block,管珊瑚块,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+acacia_pressure_plate,金合欢木压力板,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+raw_copper_block,粗铜块,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+wooden_slab,橡木台阶,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+oxidized_cut_copper_slab,氧化切制铜台阶,4,false,true,true,false,false,false,false,false,0,true,true,true,false
+beetroot,甜菜根,8,false,false,false,false,false,true,false,false,1,false,false,false,false
+skull,NoTrans,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+light_gray_candle_cake,带淡灰色蜡烛的蛋糕,29,false,true,true,false,false,true,false,false,0.8,true,true,true,false
+white_candle,白色蜡烛,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+andesite_stairs,安山岩阶梯,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+shulker_box,NoTrans,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+golden_rail,动力铁轨,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+darkoak_wall_sign,NoTrans,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+red_sandstone_stairs,红沙石阶梯,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+cyan_glazed_terracotta,青色带釉陶瓦,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+cracked_deepslate_bricks,裂纹深板岩砖,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+jungle_fence_gate,丛林木栅栏门,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+jungle_trapdoor,丛林木活板门,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+dirt_with_roots,带根泥土,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+coal_block,煤炭块,4,true,true,false,false,false,false,false,false,0,true,true,true,false
+warped_fence_gate,诡异木栅栏门,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+composter,堆肥箱,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+waxed_double_cut_copper_slab,双层涂蜡切制铜台阶,4,true,true,false,false,false,false,false,false,0,true,true,true,false
+kelp,海带,8,false,false,false,false,false,true,false,false,1,false,false,false,false
+double_plant,向日葵,10,false,false,false,true,false,true,true,false,1,false,false,false,false
+deepslate_bricks,深板岩砖,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+blue_glazed_terracotta,蓝色带釉陶瓦,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+light_blue_glazed_terracotta,淡蓝色带釉陶瓦,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+flowering_azalea,发光杜鹃花,9,false,true,true,false,false,true,false,false,1,true,false,true,false
+oxidized_cut_copper,氧化切制铜,4,true,true,false,false,false,false,false,false,0,true,true,true,false
+weeping_vines,垂泪藤,8,false,false,false,false,false,true,false,false,1,false,false,false,false
+chorus_plant,紫颂植物,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+water,水,5,false,false,false,false,false,true,true,true,1,false,true,false,false
+mud_brick_stairs,NoTrans,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+unpowered_repeater,熄灭的中继器,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+smooth_red_sandstone_stairs,平滑红沙石阶梯,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+element_100,Fermium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_101,Mendelevium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_102,Nobelium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_103,Lawrencium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_104,Rutherfordium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_105,Dubnium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_106,Seaborgium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_107,Bohrium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_108,Hassium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_109,Meitnerium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_113,Nihonium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_112,Copernicium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_111,Roentgenium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_110,Darmstadtium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_117,Tennessine,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_116,Livermorium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_115,Moscovium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_114,Flerovium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_118,Oganesson,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+white_glazed_terracotta,白色带釉陶瓦,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+stripped_warped_hyphae,去皮诡异菌丝,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+moving_block,NoTrans,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+trapped_chest,陷阱箱,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+acacia_trapdoor,金合欢木活板门,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+standing_sign,告示牌,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+glow_lichen,发光地衣,10,false,false,false,true,false,true,true,false,1,false,false,false,false
+wall_banner,NoTrans,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+twisting_vines,缠怨藤,8,false,false,false,false,false,true,false,false,1,false,false,false,false
+dark_oak_door,深色橡木门,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+soul_lantern,灵魂灯,4,false,true,true,false,false,false,false,false,0,true,true,true,false
+dirt,泥土,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+deny,拒绝方块,37,true,true,false,false,false,true,false,false,0,true,true,true,false
+bee_nest,蜂巢,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+bubble_column,NoTrans,40,false,false,false,false,false,true,true,true,1,false,false,false,false
+campfire,营火,46,false,false,false,false,false,true,false,false,0,false,false,true,false
+soul_soil,灵魂土,15,true,true,false,false,false,true,false,false,0,true,true,true,false
+soul_sand,灵魂沙,15,true,true,false,false,false,true,false,false,0,true,true,true,false
+double_stone_slab,双层石质台阶,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+reinforced_deepslate,NoTrans,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+fletching_table,制箭台,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+black_glazed_terracotta,黑色带釉陶瓦,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+waxed_oxidized_cut_copper_stairs,涂蜡氧化切制铜阶梯,4,false,true,true,false,false,false,false,false,0,true,true,true,false
+stripped_acacia_log,去皮金合欢原木,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+cobbled_deepslate_double_slab,双层圆石深板岩台阶,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+warped_fence,诡异木栅栏,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+crafting_table,工作台,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+sea_pickle,海泡菜,8,false,false,false,false,false,true,false,false,1,false,false,false,false
+double_wooden_slab,双层橡木木质台阶,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+brown_candle,棕色蜡烛,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+mossy_stone_brick_stairs,苔石砖阶梯,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+end_rod,末地烛,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+crimson_stem,绯红菌柄,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+crimson_slab,绯红台阶,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+warped_hyphae,诡异菌丝,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+warped_wart_block,诡异疣方块,38,true,true,false,false,false,true,false,false,0,true,true,true,false
+carrots,胡萝卜,8,false,false,false,false,false,true,false,false,1,false,false,false,false
+tripwire_hook,绊线钩,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+cave_vines_body_with_berries,洞穴藤蔓,8,false,false,false,false,false,true,false,false,1,false,false,false,false
+dark_oak_pressure_plate,深色橡木压力板,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+stripped_birch_log,去皮桦树原木,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+tinted_glass,染色玻璃,17,false,false,false,false,true,true,false,false,1,true,true,true,false
+big_dripleaf,大型垂滴叶,10,false,false,false,true,false,true,true,false,1,false,false,false,false
+blue_candle_cake,带蓝色蜡烛的蛋糕,29,false,true,true,false,false,true,false,false,0.8,true,true,true,false
+sweet_berry_bush,甜浆果灌木丛,8,false,false,false,false,false,true,false,false,1,false,false,false,false
+polished_blackstone_slab,磨制黑石台阶,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+reeds,甘蔗,8,false,false,false,false,false,true,false,false,1,false,false,false,false
+barrier,屏障,43,true,true,false,false,false,true,false,false,1,true,false,true,false
+jungle_standing_sign,丛林木告示牌,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+weathered_cut_copper_slab,风化切制铜台阶,4,false,true,true,false,false,false,false,false,0,true,true,true,false
+fire,火,14,false,false,false,false,false,true,true,false,1,false,false,false,true
+planks,橡木木板,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+end_portal_frame,末地传送门,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+prismarine,海晶石,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+magenta_candle_cake,带品红色蜡烛的蛋糕,29,false,true,true,false,false,true,false,false,0.8,true,true,true,false
+leaves,橡树叶,7,false,false,false,true,true,true,false,false,0.5,true,true,true,false
+deepslate_gold_ore,深层金矿石,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+ancient_debris,远古残骸,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+beehive,蜂箱,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+jungle_door,丛林木门,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+glass,玻璃,17,false,false,false,false,true,true,false,false,1,true,true,true,false
+wither_rose,凋零玫瑰,8,false,false,false,false,false,true,false,false,1,false,false,false,false
+exposed_cut_copper,外露切制铜,4,true,true,false,false,false,false,false,false,0,true,true,true,false
+waxed_weathered_cut_copper_stairs,涂蜡风化切制铜阶梯,4,false,true,true,false,false,false,false,false,0,true,true,true,false
+stained_hardened_clay,白色陶瓦,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+yellow_candle,黄色蜡烛,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+acacia_stairs,金合欢木阶梯,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+hard_stained_glass,Hardened White Stained Glass,17,false,false,false,false,true,true,false,false,1,true,true,true,false
+light_gray_candle,淡灰色蜡烛,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+double_stone_slab2,双层红沙石台阶,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+double_stone_slab3,双层末地石台阶,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+double_stone_slab4,双层苔石砖台阶,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+polished_blackstone_pressure_plate,磨制黑石压力板,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+acacia_standing_sign,金合欢木告示牌,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+concrete_powder,白色混凝土粉末,15,true,true,false,false,false,true,false,false,0,true,true,true,false
+crimson_stairs,绯红阶梯,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+stripped_spruce_log,去皮云杉原木,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+pumpkin_stem,南瓜茎,8,false,false,false,false,false,true,false,false,1,false,false,false,false
+azalea_leaves_flowered,盛开杜鹃花叶,7,false,false,false,true,true,true,false,false,0.5,true,true,true,false
+sticky_piston_arm_collision,NoTrans,35,false,true,true,false,false,true,false,false,0,true,true,true,false
+warped_nylium,诡异菌岩,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+deepslate_emerald_ore,深层绿宝石矿石,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+quartz_bricks,石英砖,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+unpowered_comparator,熄灭的比较器,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+lime_candle,黄绿色蜡烛,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+structure_block,结构方块,4,false,true,true,false,false,false,false,false,0,true,true,true,false
+end_brick_stairs,末地石砖阶梯,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+target,标靶,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+wooden_button,橡木按钮,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+pearlescent_froglight,NoTrans,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+nether_sprouts,下界芽,10,false,false,false,true,false,true,true,false,1,false,false,false,false
+verdant_froglight,NoTrans,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+warped_slab,诡异木台阶,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+warped_stem,诡异菌柄,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+coral,管珊瑚,45,false,true,true,false,false,true,false,false,0,true,true,true,false
+stripped_crimson_hyphae,去皮绯红菌丝,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+cocoa,可可,8,false,false,false,false,false,true,false,false,1,false,false,false,false
+lever,拉杆,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+brick_stairs,砖阶梯,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+moss_block,苔藓块,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+pink_glazed_terracotta,粉红色带釉陶瓦,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+waxed_weathered_cut_copper_slab,涂蜡风化切制铜台阶,4,false,true,true,false,false,false,false,false,0,true,true,true,false
+stonebrick,石砖,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+spruce_trapdoor,云杉木活板门,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+chain_command_block,连锁命令方块,4,true,true,false,false,false,false,false,false,0,true,true,true,false
+red_sandstone,红沙石,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+spruce_fence_gate,云杉栅栏门,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+exposed_cut_copper_slab,外露切制铜台阶,4,false,true,true,false,false,false,false,false,0,true,true,true,false
+red_nether_brick_stairs,红色下界砖阶梯,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+green_glazed_terracotta,绿色带釉陶瓦,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+deepslate_redstone_ore,深层红石矿石,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+anvil,铁砧,4,false,true,true,false,false,false,false,false,0,true,true,true,false
+birch_trapdoor,桦木活板门,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+mangrove_leaves,NoTrans,7,false,false,false,true,true,true,false,false,0.5,true,true,true,false
+cobbled_deepslate,深板岩圆石,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+bookshelf,书架,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+log,橡树原木,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+mud,NoTrans,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+lit_pumpkin,南瓜灯,27,true,true,false,false,false,true,false,false,0,true,true,true,false
+ice,冰,19,false,false,false,false,true,true,false,false,0,true,true,true,false
+air,空气,0,false,false,false,false,false,true,true,false,1,false,false,false,false
+bed,床,13,false,true,true,false,false,true,false,false,0.1,true,true,true,false
+tnt,TNT,18,false,false,false,true,true,true,false,false,0,true,true,true,false
+purple_candle_cake,带紫色蜡烛的蛋糕,29,false,true,true,false,false,true,false,false,0.8,true,true,true,false
+web,蜘蛛网,30,false,false,false,false,false,false,false,false,0.8,false,false,false,false
+polished_diorite_stairs,磨制闪长岩阶梯,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+crying_obsidian,哭泣的黑曜石,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+enchanting_table,附魔台,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+stone_slab2,红沙石台阶,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+stone_slab3,末地石砖台阶,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+stone_slab4,苔石砖台阶,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+polished_blackstone_wall,磨制黑石墙,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+waxed_exposed_double_cut_copper_slab,双层外露涂蜡切制铜台阶,4,true,true,false,false,false,false,false,false,0,true,true,true,false
+azalea,杜鹃花,9,false,true,true,false,false,true,false,false,1,true,false,true,false
+mud_bricks,NoTrans,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+birch_wall_sign,NoTrans,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+hopper,漏斗,4,false,true,true,false,false,false,false,false,0,true,true,true,false
+bell,钟,4,true,true,false,false,false,false,false,false,0,true,true,true,false
+lectern,讲台,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+stripped_crimson_stem,去皮绯红菌柄,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+standing_banner,旗帜,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+jungle_stairs,丛林木阶梯,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+grass,草方块,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+mangrove_propagule,NoTrans,8,false,false,false,false,false,true,false,false,1,false,false,false,false
+cactus,仙人掌,25,false,false,false,false,true,true,false,false,0.5,true,true,true,false
+budding_amethyst,发芽紫水晶,24,true,true,false,false,false,true,false,false,0,true,true,true,false
+birch_stairs,桦木阶梯,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+purple_glazed_terracotta,紫色带釉陶瓦,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+bedrock,基岩,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+blackstone_stairs,黑石阶梯,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+blue_ice,蓝冰,20,true,true,false,false,false,true,false,false,0,true,true,true,false
+polished_andesite_stairs,磨制安山岩阶梯,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+sculk,NoTrans,48,true,true,false,false,false,true,false,false,0,true,true,true,false
+netherrack,下界岩,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+purple_candle,紫色蜡烛,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+spruce_standing_sign,云杉木告示牌,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+lantern,灯,4,false,true,true,false,false,false,false,false,0,true,true,true,false
+lit_blast_furnace,燃烧中的高炉,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+allow,允许方块,36,true,true,false,false,false,true,false,false,0,true,true,true,false
+birch_door,白桦木门,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+chest,箱子,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+chain,锁链,4,true,true,false,false,false,false,false,false,0,true,true,true,false
+clay,粘土块,26,true,true,false,false,false,true,false,false,0,true,true,true,false
+cake,蛋糕,29,false,true,true,false,false,true,false,false,0.8,true,true,true,false
+sculk_vein,NoTrans,49,false,false,false,false,false,true,true,false,0,false,false,false,false
+deepslate_coal_ore,深层煤矿石,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+weathered_cut_copper,风化切制铜,4,true,true,false,false,false,false,false,false,0,true,true,true,false
+warped_standing_sign,诡异木告示牌,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+cracked_polished_blackstone_bricks,裂纹磨制黑石砖,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+flowing_lava,熔岩,6,false,false,false,false,false,true,true,true,1,false,true,false,true
+acacia_button,金合欢木按钮,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+lit_furnace,NoTrans,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+chiseled_nether_bricks,錾制下界砖,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+warped_button,诡异木按钮,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+deepslate_lapis_ore,深板岩青金石矿石,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+prismarine_stairs,海晶石阶梯,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+dragon_egg,龙蛋,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+nether_brick,下界砖块,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+deepslate_iron_ore,深层铁矿石,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+element_1,Hydrogen,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_0,???,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_3,Lithium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_2,Helium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_5,Boron,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_4,Beryllium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_7,Nitrogen,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_6,Carbon,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_9,Fluorine,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_8,Oxygen,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+camera,摄像机,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+wheat,农作物,8,false,false,false,false,false,true,false,false,1,false,false,false,false
+waxed_cut_copper,涂蜡切制铜,4,true,true,false,false,false,false,false,false,0,true,true,true,false
+chemistry_table,Compound Creator,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+cobbled_deepslate_slab,深板岩圆石台阶,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+spore_blossom,孢子花,10,false,false,false,true,false,true,true,false,1,false,false,false,false
+crimson_standing_sign,绯红告示牌,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+darkoak_standing_sign,深色橡木告示牌,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+weathered_double_cut_copper_slab,双层风化双切制铜台阶,4,true,true,false,false,false,false,false,false,0,true,true,true,false
+emerald_ore,绿宝石矿石,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+brown_mushroom_block,蘑菇,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+fence,橡木栅栏,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+pink_candle,粉红色蜡烛,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+carved_pumpkin,雕刻南瓜,27,true,true,false,false,false,true,false,false,0,true,true,true,false
+dropper,投掷器,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+spruce_wall_sign,NoTrans,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+stripped_warped_stem,去皮诡异菌柄,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+candle,蜡烛,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+pointed_dripstone,滴水石锥,47,false,true,true,false,false,true,false,false,0,true,true,true,false
+netherreactor,下界反应核,4,true,true,false,false,false,false,false,false,0,true,true,true,false
+deepslate_brick_stairs,深板岩砖阶梯,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+dark_prismarine_stairs,暗海晶石阶梯,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+chemical_heat,Heat Block,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+trip_wire,绊线,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+cauldron,炼药锅,4,false,true,true,false,false,false,false,false,0,true,true,true,false
+cave_vines_head_with_berries,洞穴藤蔓,8,false,false,false,false,false,true,false,false,1,false,false,false,false
+dark_oak_trapdoor,深色橡木活板门,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+colored_torch_bp,Blue Torch,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+colored_torch_rg,Red Torch,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+waxed_oxidized_copper,涂蜡氧化铜,4,true,true,false,false,false,false,false,false,0,true,true,true,false
+stripped_oak_log,去皮橡树原木,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+sea_lantern,海晶灯,17,false,false,false,false,true,true,false,false,1,true,true,true,false
+brewing_stand,酿造台,4,false,true,true,false,false,false,false,false,0,true,true,true,false
+bamboo_sapling,竹笋,8,false,false,false,false,false,true,false,false,1,false,false,false,false
+blast_furnace,高炉,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+crimson_roots,绯红菌根,10,false,false,false,true,false,true,true,false,1,false,false,false,false
+stonecutter_block,切石机,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+white_candle_cake,带白色蜡烛的蛋糕,29,false,true,true,false,false,true,false,false,0.8,true,true,true,false
+candle_cake,带蜡烛的蛋糕,29,false,true,true,false,false,true,false,false,0.8,true,true,true,false
+end_portal,末地传送门,28,false,false,false,false,false,true,false,false,0,false,false,false,false
+blackstone,黑石,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+acacia_fence_gate,金合欢木栅栏门,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+lit_deepslate_redstone_ore,发光中的深层红石矿石,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+element_10,Neon,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_11,Sodium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_12,Magnesium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_13,Aluminum,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_14,Silicon,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_15,Phosphorus,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_16,Sulfur,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_17,Chlorine,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_18,Argon,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_19,Potassium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_36,Krypton,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_37,Rubidium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_34,Selenium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_35,Bromine,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_32,Germanium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_33,Arsenic,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_30,Zinc,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_31,Gallium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_38,Strontium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_39,Yttrium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_29,Copper,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_28,Nickel,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_21,Scandium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_20,Calcium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_23,Vanadium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_22,Titanium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_25,Manganese,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_24,Chromium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_27,Cobalt,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_26,Iron,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_58,Cerium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_59,Praseodymium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_54,Xenon,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_55,Cesium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_56,Barium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_57,Lanthanum,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_50,Tin,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_51,Antimony,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_52,Tellurium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_53,Iodine,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_49,Indium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_48,Cadmium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_47,Silver,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_46,Palladium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_45,Rhodium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_44,Ruthenium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_43,Technetium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_42,Molybdenum,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_41,Niobium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_40,Zirconium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_72,Hafnium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_73,Tantalum,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_70,Ytterbium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_71,Lutetium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_76,Osmium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_77,Iridium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_74,Tungsten,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_75,Rhenium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_78,Platinum,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_79,Gold,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_65,Terbium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_64,Gadolinium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_67,Holmium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_66,Dysprosium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_61,Promethium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_60,Neodymium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_63,Europium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_62,Samarium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_69,Thulium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_68,Erbium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_98,Californium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_99,Einsteinium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_90,Thorium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_91,Protactinium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_92,Uranium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_93,Neptunium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_94,Plutonium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_95,Americium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_96,Curium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_97,Berkelium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_89,Actinium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_88,Radium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_83,Bismuth,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_82,Lead,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_81,Thallium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_80,Mercury,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_87,Francium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_86,Radon,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_85,Astatine,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+element_84,Polonium,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+lit_smoker,燃烧中的火炉,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+lapis_ore,青金石矿石,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+smooth_quartz_stairs,平滑石英阶梯,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+red_candle_cake,带红色蜡烛的蛋糕,29,false,true,true,false,false,true,false,false,0.8,true,true,true,false
+azalea_leaves,杜鹃花叶,7,false,false,false,true,true,true,false,false,0.5,true,true,true,false
+purpur_block,紫珀方块,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+cyan_candle,青色蜡烛,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+waxed_copper,涂蜡铜方块,4,true,true,false,false,false,false,false,false,0,true,true,true,false
+repeating_command_block,重复命令方块,4,true,true,false,false,false,false,false,false,0,true,true,true,false
+nether_wart,下界疣,8,false,false,false,false,false,true,false,false,1,false,false,false,false
+waxed_oxidized_double_cut_copper_slab,双层氧化涂蜡切制铜台阶,4,true,true,false,false,false,false,false,false,0,true,true,true,false
+crimson_fungus,绯红真菌,8,false,false,false,false,false,true,false,false,1,false,false,false,false
+polished_deepslate,磨制深板岩,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+purpur_stairs,紫珀阶梯,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+portal,传送门,28,false,false,false,false,false,true,false,false,0,false,false,false,false
+birch_button,桦木按钮,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+command_block,命令方块,4,true,true,false,false,false,false,false,false,0,true,true,true,false
+polished_blackstone_button,磨制黑石按钮,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+furnace,熔炉,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+info_update2,NoTrans,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+amethyst_cluster,紫水晶簇,24,false,true,true,false,false,true,false,false,0,true,true,true,false
+waxed_cut_copper_slab,涂蜡切制铜台阶,4,false,true,true,false,false,false,false,false,0,true,true,true,false
+polished_deepslate_wall,磨制深板岩墙,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+dried_kelp_block,干海带方块,27,true,true,false,false,false,true,false,false,0,true,true,true,false
+light_block,光源方块,0,false,false,false,false,false,true,true,false,1,false,false,false,false
+crimson_fence,绯红栅栏,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+turtle_egg,海龟蛋,41,false,true,true,false,false,true,false,false,0,true,true,true,false
+magma,岩浆方块,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+dispenser,发射器,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+hard_stained_glass_pane,Hardened White Stained Glass Pane,17,false,false,false,false,true,true,false,false,1,true,true,true,false
+deepslate_diamond_ore,深层钻石矿石,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+grindstone,磨石,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+soul_campfire,灵魂营火,46,false,false,false,false,false,true,false,false,0,false,false,true,false
+wooden_pressure_plate,橡木压力板,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+lime_candle_cake,带黄绿色蜡烛的蛋糕,29,false,true,true,false,false,true,false,false,0.8,true,true,true,false
+grass_path,泥土小径,1,true,true,false,false,false,true,false,false,0,true,true,true,false
+cobbled_deepslate_wall,深板岩圆石墙,3,false,true,true,false,false,false,false,false,0,true,true,true,false
+orange_candle_cake,带橙色蜡烛的蛋糕,29,false,true,true,false,false,true,false,false,0.8,true,true,true,false
+weathered_copper,风化铜,4,true,true,false,false,false,false,false,false,0,true,true,true,false
+unlit_redstone_torch,红石火把,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+gray_glazed_terracotta,灰色带釉陶瓦,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+lodestone,磁石,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+raw_iron_block,粗铁块,3,true,true,false,false,false,false,false,false,0,true,true,true,false
+iron_block,铁块,4,true,true,false,false,false,false,false,false,0,true,true,true,false
+ladder,梯子,16,false,false,false,false,false,true,false,false,1,false,false,false,false
+crimson_pressure_plate,绯红压力板,2,false,true,true,true,false,true,false,false,0,true,true,true,false
+gravel,砂砾,15,true,true,false,false,false,true,false,false,0,true,true,true,false
+cartography_table,制图台,2,true,true,false,true,false,true,false,false,0,true,true,true,false
+`;
+
+        function buildOutputTable(csv) {
+            let lines = csv.split("\n");
+            let output = "";
+            let header = lines[0].split(",");
+            lines.shift();
+            lines.sort((left, right)=>{
+                let leftType = Number.parseInt(left.split(",")[2]);
+                let rightType = Number.parseInt(right.split(",")[2]);
+                return leftType - rightType;
+            });
+            
+            // 设置 header 自动换行
+            output += `<table class="table table-striped table-bordered table-hover table-sm"><thead><tr>`;
+
+            for (let i = 0; i < header.length; i++) {
+                output+=`<th>${header[i]}</th>`;
+            }
+            output+=`</tr></thead><tbody>`;
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i].split(",");
+                output+=`<tr>`;
+                for (let j = 0; j < line.length; j++) {
+                    if(j>2){
+                        const green = line[j] === "true" || (line[j] !== "false" && line[j] !== "0");
+                        output+=green? `<td style="color:green">${line[j]}</td>` : `<td style="color:red">${line[j]}</td>`;
+                    }else{
+                        output+=`<td>${line[j]}</td>`;
+                    }
+                }
+                output+=`</tr>`;
+            }
+            output+=`</tbody></table>`;
+            return output;
+        }
+
+        // onLoaded
+        function onLoaded() {
+            const output_body = document.getElementById("Blocks_output");
+            output_body.innerHTML = buildOutputTable(csv);
+        }
+        window.onload = onLoaded;
+    </script>
+</head>
+
+<body for="html-export">
+    <div class="mume markdown-preview  ">
+        <h1 class="mume-header">方块特性(1.18.32.02)</h1>
+        <table id="Blocks_output" style="width:100%">
+        </table>
+        <!-- 脚注 -->
+    </div>
+</body>
+
+</html>
