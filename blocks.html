@@ -857,7 +857,7 @@
         // onLoaded
         async function onLoaded() {
             const blocks_csv = await request_get_async("data/blocks_1_18_32.csv");
-            const materials_csv = await request_get_async("data/materials.csv");
+            const materials_csv = await request_get_async("data/materials_1_18_32.csv");
             const block_table = document.getElementById("Blocks_output");
             block_table.innerHTML = buildOutputTable(blocks_csv);
             const material_table = document.getElementById("Blocks_output");
