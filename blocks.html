@@ -810,10 +810,10 @@
                 let request = new XMLHttpRequest();
                 request.open('GET', url, true);
                 request.onload = () =>{
-                    if(request.status == request.DONE){
+                    if(request.status == 200){
                         resolve(request.responseText);
                     }else{
-                        reject(Error(request.statusText));
+                        reject(new Error(request.statusText));
                     }
                 }
                 request.send();
@@ -869,12 +869,12 @@
 
 <body for="html-export">
     <div class="mume markdown-preview  ">
-        <h1 class="mume-header">方块特性(1.18.32.02)</h1>
+        <h1 class="mume-header">方块特性(1.18.32.02) - <a href="data/blocks_1_18_32.csv">blocks_1_18_32.csv</a></h1>
         <table id="Blocks_output" style="width:100%">
         </table>
     </div>
     <div class="mume markdown-preview  ">
-        <h1 class="mume-header">材质特性(1.18.32.02)</h1>
+        <h1 class="mume-header">材质特性(1.18.32.02) - <a href="data/materials_1_18_32.csv">materials_1_18_32.csv</a></h1>
         <table id="Materials_output" style="width:100%">
         </table>
     </div>
