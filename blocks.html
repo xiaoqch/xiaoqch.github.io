@@ -860,7 +860,7 @@
             const materials_csv = await request_get_async("data/materials_1_18_32.csv");
             const block_table = document.getElementById("Blocks_output");
             block_table.innerHTML = buildOutputTable(blocks_csv);
-            const material_table = document.getElementById("Blocks_output");
+            const material_table = document.getElementById("Materials_output");
             material_table.innerHTML = buildOutputTable(materials_csv);
         }
         window.onload = onLoaded;
